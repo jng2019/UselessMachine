@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
     private Button buttonSelfDestruct;
     private TextView showProgress;
     private ProgressBar barShowProgress;
+    private Button buttonBeBusy;
 
 
     @Override
@@ -26,28 +27,27 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         wirewidgets();
         setListeners();
-        updateGameDisplay();
 
     }
 
-    private void updateGameDisplay() {
-
-    }
 
     private void wirewidgets() {
         buttonSelfDestruct = findViewById(R.id.button_main_selfDestruct);
         uselessSwitch = findViewById(R.id.switch_main_useless);
+        buttonBeBusy = findViewById(R.id.buttonLookBusy);
+        barShowProgress = findViewById(R.id.progressBar_main_LookBusy);
+        showProgress = findViewById(R.id.textView2);
     }
 
     private void setListeners() {
         uselessSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
-                public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
+            public void onCheckedChanged(CompoundButton compoundButton, boolean isChecked) {
                 if (isChecked) {
                     new CountDownTimer(2000, 1000) {
                         @Override
                         public void onTick(long l) {
-                            if (!uselessSwitch.isChecked()){
+                            if (!uselessSwitch.isChecked()) {
                                 cancel();
                             }
                         }
@@ -60,28 +60,55 @@ public class MainActivity extends AppCompatActivity {
                 }
                 if (isChecked) {
                     Toast.makeText(MainActivity.this, "Switch Is On!", Toast.LENGTH_SHORT).show();
-                }
-                else {
+                } else {
                     Toast.makeText(MainActivity.this, "Switch Is Off!", Toast.LENGTH_SHORT).show();
                 }
 
-        buttonSelfDestruct.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View view) {
-                        new CountDownTimer(10000, 1000){
-                            @Override
-                            public void onTick(long ticksLeft) {
-                                buttonSelfDestruct.setText(String.valueOf(ticksLeft));
-                            }
-                            @Override
-                            public void onFinish() {
-                                cancel();
-                            }
-                        }.start();
-                        return false;
-                    }
-                });
             }
+        });
+        buttonSelfDestruct.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                new CountDownTimer(10000, 1000){
+                    @Override
+                    public void onTick(long ticksLeft) {
+                        buttonSelfDestruct.setText(String.valueOf(ticksLeft/1000));
+                    }
+                    @Override
+                    public void onFinish() {
+                        finish();
+                    }
+                }.start();
+            }
+        });
+
+        buttonBeBusy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                buttonBeBusy.setVisibility(View.INVISIBLE);
+                buttonSelfDestruct.setVisibility(View.INVISIBLE);
+                uselessSwitch.setVisibility(View.INVISIBLE);
+                barShowProgress.setVisibility(View.VISIBLE);
+                showProgress.setVisibility(View.VISIBLE);
+                new CountDownTimer(10000, 100) {
+                    int countDown = 1;
+                    @Override
+                    public void onTick(long l) {
+                        barShowProgress.setProgress(countDown);
+                        countDown++;
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        buttonBeBusy.setVisibility(View.VISIBLE);
+                        buttonSelfDestruct.setVisibility(View.VISIBLE);
+                        uselessSwitch.setVisibility(View.VISIBLE);
+                        barShowProgress.setVisibility(View.INVISIBLE);
+                        showProgress.setVisibility(View.INVISIBLE);
+                    }
+                }.start();
+            }
+
         });
     }
 
